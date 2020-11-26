@@ -1,0 +1,12 @@
+name: EasyHarvest
+version: ${project.version}
+main: net.teamfruit.easyharvest.EasyHarvest
+api-version: 1.15
+softdepend:
+  - WorldGuard
+authors:
+  - Kamesuta
+
+permissions:
+  easyharvest.use:
+    default: true
