@@ -41,9 +41,6 @@ public final class EasyHarvest extends JavaPlugin implements Listener {
             return;
 
         Player player = e.getPlayer();
-        if (!player.hasPermission("easyharvest.use"))
-            return;
-
         if (!canBuild.test(player, block.getLocation()))
             return;
 
