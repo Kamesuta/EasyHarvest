@@ -17,6 +17,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.function.BiPredicate;
@@ -40,22 +42,56 @@ public final class EasyHarvest extends JavaPlugin implements Listener {
         if (block == null)
             return;
 
+        // クワに応じて半径を変える
+        int radius = 0;
+        ItemStack itemHand = e.getPlayer().getInventory().getItem(EquipmentSlot.HAND);
+
+        if (itemHand != null) {
+            switch (itemHand.getType()) {
+                case WOODEN_HOE:
+                    radius = 1;
+                    break;
+                case STONE_HOE:
+                    radius = 2;
+                    break;
+                case IRON_HOE:
+                    radius = 3;
+                    break;
+                case GOLDEN_HOE:
+                    radius = 4;
+                    break;
+                case DIAMOND_HOE:
+                    radius = 5;
+                    break;
+                case NETHERITE_HOE:
+                    radius = 6;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         Player player = e.getPlayer();
-        if (!canBuild.test(player, block.getLocation()))
-            return;
+        for (int i = -radius; i <= radius; i++) {
+            for (int j = -radius; j <= radius; j++) {
+                Block blockRelative = block.getRelative(i, 0, j);
+                if (!canBuild.test(player, blockRelative.getLocation()))
+                    continue;
 
-        BlockData blockData = block.getBlockData();
-        if (!(blockData instanceof Ageable))
-            return;
+                BlockData blockData = blockRelative.getBlockData();
+                if (!(blockData instanceof Ageable))
+                    continue;
 
-        Ageable ageable = (Ageable) blockData;
-        if (ageable.getAge() < ageable.getMaximumAge())
-            return;
+                Ageable ageable = (Ageable) blockData;
+                if (ageable.getAge() < ageable.getMaximumAge())
+                    continue;
 
-        Material type = block.getType();
-        block.breakNaturally();
-        block.setType(type);
-        ageable.setAge(0);
+                Material type = blockRelative.getType();
+                blockRelative.breakNaturally();
+                blockRelative.setType(type);
+                ageable.setAge(0);
+            }
+        }
     }
 
     private static class CanBuildPredicate implements BiPredicate<Player, Location> {

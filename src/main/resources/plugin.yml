@@ -1,7 +1,7 @@
 name: EasyHarvest
 version: ${project.version}
 main: net.teamfruit.easyharvest.EasyHarvest
-api-version: 1.15
+api-version: 1.16
 softdepend:
   - WorldGuard
 authors:
